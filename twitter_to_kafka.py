@@ -8,11 +8,11 @@ from tweepy.streaming import StreamListener
 import pykafka
 
 
-api_key = "your_api_key"
-api_secret = "your_api_secret"
+consumer_key = "fPfZwgsRCVXCflAzZ9WQLIN7K"
+consumer_secret = "Y9pDFu4g1OecMpjNhue70kMvscL4NgEp4HyEAPN8WSmCN1aCLQ"
 
-access_token = "your_access_token"
-access_token_secret = "your_access_token_secret"
+access_token = "616123627-gAkuVe7rHolE76BozTWteHByh760DNpjO6OplOwp"
+access_token_secret = "oSDservoNxKaPSvLP1wHOhp6WrNgK9yavXnWxF8CfwM1D"
 
 
 class StdOutListener(StreamListener):
@@ -28,7 +28,7 @@ class StdOutListener(StreamListener):
             json_message = json.loads(data)
             message = json_message["text"]
             print (message)
-            self.kafkaproducer.produce(bytes(json.dumps(message), "ascii"))
+            self.kafkaproducer.produce(bytes(json.dumps(message)))
 
         except BaseException as error:
             print(str(error))
@@ -43,11 +43,11 @@ class StdOutListener(StreamListener):
 
 if __name__ == "__main__":
 
-    topic = 'iottopic'
+    topic = "iottopic"
 
     kafka_client = pykafka.KafkaClient("localhost:9092")
 
-    kafka_producer = kafka_client.topics[bytes(topic,"utf-8")].get_producer()
+    kafka_producer = kafka_client.topics[bytes(topic)].get_producer()
 
     l = StdOutListener(kafka_producer)
     
