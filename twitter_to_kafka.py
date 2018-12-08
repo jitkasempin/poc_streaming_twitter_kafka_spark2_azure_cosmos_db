@@ -28,7 +28,7 @@ class StdOutListener(StreamListener):
             json_message = json.loads(data)
             message = json_message["text"]
             print (message)
-            self.kafkaproducer.produce(bytes(json.dumps(message)))
+            self.kafkaproducer.produce(bytes(json.dumps(message), "ascii"))
 
         except BaseException as error:
             print(str(error))
@@ -43,11 +43,11 @@ class StdOutListener(StreamListener):
 
 if __name__ == "__main__":
 
-    topic = "iottopic"
+    topic = "iot_topic"
 
     kafka_client = pykafka.KafkaClient("localhost:9092")
 
-    kafka_producer = kafka_client.topics[bytes(topic)].get_producer()
+    kafka_producer = kafka_client.topics[bytes(topic, "utf-8")].get_producer()
 
     l = StdOutListener(kafka_producer)
     

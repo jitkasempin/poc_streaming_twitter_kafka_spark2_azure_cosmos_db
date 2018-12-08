@@ -5,7 +5,7 @@ from pyspark.sql.types import *
 
 if __name__ == "__main__":
 
-    topic = "iottopic"
+    topic = "iot_topic"
     
     spark = SparkSession\
         .builder\
@@ -18,7 +18,6 @@ if __name__ == "__main__":
                         .format("kafka")\
                         .option("kafka.bootstrap.servers",  "localhost:9092")\
                         .option("subscribe", topic)\
-                        .option("startingOffsets", "earliest") \
                         .load()
 
     tweet_df = tweet_data.selectExpr("CAST(value AS STRING) as tweetmessage")
