@@ -27,8 +27,8 @@ object KafkaSparkCosmosDB {
     //val hadoop_conf = spark.sparkContext.hadoopConfiguration
     //hadoop_conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
     // hadoop_conf.set("fs.s3a.multiobjectdelete.enable", "false")
-    //hadoop_conf.set("fs.s3a.awsAccessKeyId", "AKIAIVJZJEHE4ATMTPJQ")
-    //hadoop_conf.set("fs.s3a.awsSecretAccessKey", "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")
+    //hadoop_conf.set("fs.s3a.awsAccessKeyId", "")
+    //hadoop_conf.set("fs.s3a.awsSecretAccessKey", "")
 
     val df = spark
       .readStream
