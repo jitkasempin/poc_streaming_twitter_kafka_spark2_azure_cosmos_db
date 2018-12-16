@@ -7,7 +7,7 @@ import org.apache.spark.SparkContext
 object KafkaSparkCosmosDB {
 
   private val RUN_LOCAL_WITH_AVAILABLE_CORES = "local[*]"
-  private val APPLICATION_NAME = "Spark Structured Streaming"
+  private val APPLICATION_NAME = "SparkStructuredStreaming"
 
   def main(args: Array[String]): Unit = {
 
@@ -24,51 +24,31 @@ object KafkaSparkCosmosDB {
 
 //  val sc = new SparkContext(conf)
 
-    val hadoop_conf = spark.sparkContext.hadoopConfiguration
-    hadoop_conf.set("fs.s3n.impl", "org.apache.hadoop.fs.s3native.NativeS3FileSystem")
-    hadoop_conf.set("fs.s3n.awsAccessKeyId", "your_aws_access_id")
-    hadoop_conf.set("fs.s3n.awsSecretAccessKey", "your_aws_access_key")
+    //val hadoop_conf = spark.sparkContext.hadoopConfiguration
+    //hadoop_conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+    // hadoop_conf.set("fs.s3a.multiobjectdelete.enable", "false")
+    //hadoop_conf.set("fs.s3a.awsAccessKeyId", "AKIAIVJZJEHE4ATMTPJQ")
+    //hadoop_conf.set("fs.s3a.awsSecretAccessKey", "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")
 
     val df = spark
-      .read
+      .readStream
       .format("kafka")
       .option("kafka.bootstrap.servers", "localhost:9092")
-      .option("subscribe", "topic_output")
+      .option("subscribe", "iot_topic")
       .option("failOnDataLoss", false)
-      .option("kafkaConsumer.pollTimeoutMs", 4096)
       .load()
 
 
     val dss = df
                 .selectExpr("CAST(value AS STRING)")
-                .write
-                .format("parquet")
-                .option("path","s3n://bigdata-testing123/sparkapp")
-                .save()
+                .writeStream
+                .format("csv")
+                .option("checkpointLocation", "chkpointjittempdir")
+                .option("path","hdfs://localhost:9000/user")
+                .start()
+                .awaitTermination()
 
   }
 
 
 }
-
-//  val data = df.selectExpr("CAST(key AS STRING) as id", "CAST(value AS STRING) as word_length")
-//  .as[(String, String)]
-//
-//  COMMAND ----------
-
-//    val sinkConfigMap = Map(
-//      "Endpoint" -> "https://jitkasem.documents.azure.com:443/",
-//      "Masterkey" -> "Y9zV6AJW8QO9M5ey3ZXUtZJ2tmZc1LNHh0pJWxec3rK13quO9kXWT1xolenqYajUYxLLMYG7ABBA4V5QKu34Zw==",
-//      "Database" -> "maindb",
-//      "Collection" -> "maindata",
-//      "checkpointLocation" -> "checkpoint",
-//      "WritingBatchSize" -> "10",
-//      "Upsert" -> "true")
-
-// Start the stream writer
-//    val streamingQueryWriter = df.writeStream
-//      .format(classOf[CosmosDBSinkProvider].getName)
-//      .outputMode("append")
-//      .options(sinkConfigMap)
-//      .start()
-//      .awaitTermination()
