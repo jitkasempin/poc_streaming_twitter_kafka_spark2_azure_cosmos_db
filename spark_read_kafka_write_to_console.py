@@ -1,6 +1,8 @@
 import sys
+import re
+import pyspark.sql.functions as f
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
+#from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
 if __name__ == "__main__":
@@ -26,17 +28,35 @@ if __name__ == "__main__":
         str_len = len(text)
         return str_len
 
-
+    def cleaning_message_str(txt):
+        clean_txt = re.sub(r'[^"]*(?:""[^"]*)*', "", txt)
+        return clean_txt
+        
+        
     add_length_str_udf = udf(
                             add_length_str,
                             IntegerType()
                             )
 
+    clean_txt_txt_udf = udf(
+                            cleaning_message_str,
+                            StringType()
+                            )
+    
+    #tweet_df = tweet_df.select("tweetmessage", f.regexp_replace(f.col("tweetmessage"), "[\$#,]", "").alias("replaced"))
+    
     tweet_df = tweet_df.withColumn(
                                     "word_length", 
                                     add_length_str_udf(tweet_df.tweetmessage)
                                     )
-    query = tweet_df.writeStream\
+
+    tweet_df = tweet_df.withColumn(
+                                    "replaced",
+                                    clean_txt_txt_udf(tweet_df.tweetmessage)
+                                    )
+                                                                            
+    query = tweet_df.select("word_length" , "replaced")\
+                                .writeStream\
                                 .outputMode("append")\
                                 .format("console")\
                                 .option("truncate", "false")\

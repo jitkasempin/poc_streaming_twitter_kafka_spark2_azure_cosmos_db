@@ -28,7 +28,7 @@ class StdOutListener(StreamListener):
             json_message = json.loads(data)
             message = json_message["text"]
             print (message)
-            self.kafkaproducer.produce(bytes(json.dumps(message), "ascii"))
+            self.kafkaproducer.produce(bytes(json.dumps(message), "utf-8"))
 
         except BaseException as error:
             print(str(error))
