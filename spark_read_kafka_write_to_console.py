@@ -73,7 +73,8 @@ if __name__ == "__main__":
     
     #query = tweet_data \
     #                             .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
-    query = final_df.select(to_json(struct([final_df[x] for x in final_df.columns])).alias("value"))\
+    
+    query = final_df \
                                  .writeStream \
                                  .format("json") \
                                  .option("checkpointLocation", "chwritefiledir") \
@@ -81,7 +82,7 @@ if __name__ == "__main__":
                                  .start() \
                                  .awaitTermination()
 
-
+    #query = final_df.select(to_json(struct([final_df[x] for x in final_df.columns])).alias("value"))\
                                  #.format("kafka") \
                                  #.option("kafka.bootstrap.servers", "localhost:9092") \
                                  #.option("checkpointLocation", "pabcdefdir") \
