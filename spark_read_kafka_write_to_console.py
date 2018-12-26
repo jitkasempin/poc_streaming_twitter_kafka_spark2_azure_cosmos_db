@@ -1,14 +1,16 @@
 import sys
 import re
-import pyspark.sql.functions as f
+# import pyspark.sql.functions as f
+# from pyspark.sql.functions import to_json, struct
 from pyspark.sql import SparkSession
-#from pyspark.sql.functions import *
+from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
 if __name__ == "__main__":
 
     topic = "iot_topic"
-    
+    columns_to_drop = ["tweetmessage"]
+
     spark = SparkSession\
         .builder\
         .appName("Twitter")\
@@ -29,7 +31,7 @@ if __name__ == "__main__":
         return str_len
 
     def cleaning_message_str(txt):
-        clean_txt = re.sub(r'[^"]*(?:""[^"]*)*', "", txt)
+        clean_txt = re.sub(r'"', '', txt)
         return clean_txt
         
         
@@ -54,23 +56,36 @@ if __name__ == "__main__":
                                     "replaced",
                                     clean_txt_txt_udf(tweet_df.tweetmessage)
                                     )
+
+    final_df = tweet_df.drop(*columns_to_drop)
+
                                                                             
-    query = tweet_df.select("word_length" , "replaced")\
-                                .writeStream\
-                                .outputMode("append")\
-                                .format("console")\
-                                .option("truncate", "false")\
-                                .trigger(processingTime="5 seconds")\
-                                .start()\
-                                .awaitTermination()
+    # query = final_df.select(to_json(struct([final_df[x] for x in final_df.columns])).alias("value"))\
+    #                            .writeStream\
+    #                            .outputMode("append")\
+    #                            .format("console")\
+    #                            .option("truncate", "false")\
+    #                            .trigger(processingTime="5 seconds")\
+    #                            .start()\
+    #                            .awaitTermination()
 
     # Below code is for writing to Kafka topic
     
     #query = tweet_data \
     #                             .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
-    #                             .writeStream \
-    #                             .format("kafka") \
-    #                             .option("kafka.bootstrap.servers", "localhost:9092") \
-    #                             .option("topic", "topic_output") \
-    #                             .start() \
-    #                             .awaitTermination()
+    
+    query = final_df \
+                                 .writeStream \
+                                 .format("json") \
+                                 .option("checkpointLocation", "chwritefiledir") \
+                                 .option("path","hdfs://localhost:9000/user") \
+                                 .start() \
+                                 .awaitTermination()
+
+    #query = final_df.select(to_json(struct([final_df[x] for x in final_df.columns])).alias("value"))\
+                                 #.format("kafka") \
+                                 #.option("kafka.bootstrap.servers", "localhost:9092") \
+                                 #.option("checkpointLocation", "pabcdefdir") \
+                                 #.option("topic", "topic_output") \
+                                 #.start() \
+                                 #.awaitTermination()
