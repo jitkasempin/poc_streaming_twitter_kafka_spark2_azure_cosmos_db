@@ -4,6 +4,6 @@ mvn clean
 echo "done clean"
 mvn compile
 echo "done compile"
-mvn package
+mvn package -DskipTests
 echo "done package"
 
