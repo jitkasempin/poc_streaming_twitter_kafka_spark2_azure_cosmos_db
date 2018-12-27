@@ -11,6 +11,11 @@ object KafkaSparkCosmosDB {
 
   def main(args: Array[String]): Unit = {
 
+    val kafkaUrl = "localhost:9092"
+
+    val schemaRegistryURL = "http://localhost:8081"
+
+    val topic = "confluent-in-prices"
 
     val conf = new SparkConf()
                   .setMaster(RUN_LOCAL_WITH_AVAILABLE_CORES)
@@ -22,23 +27,19 @@ object KafkaSparkCosmosDB {
 
     spark.sparkContext.setLogLevel("ERROR")
 
-//  val sc = new SparkContext(conf)
-
-    //val hadoop_conf = spark.sparkContext.hadoopConfiguration
-    //hadoop_conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
-    // hadoop_conf.set("fs.s3a.multiobjectdelete.enable", "false")
-    //hadoop_conf.set("fs.s3a.awsAccessKeyId", "")
-    //hadoop_conf.set("fs.s3a.awsSecretAccessKey", "")
-
     val df = spark
       .readStream
       .format("kafka")
       .option("kafka.bootstrap.servers", "localhost:9092")
-      .option("subscribe", "iot_topic")
+      .option("subscribe", topic)
+      .option("startingOffsets", "latest")
       .option("failOnDataLoss", false)
       .load()
 
-
+//    val utils = new ConfluentSparkAvroUtils(schemaRegistryURL)
+//    val keyDes = utils.deserializerForSubject(topic + "-key")
+//    val valDes = utils.deserializerForSubject(topic + "-value")
+    
     val dss = df
                 .selectExpr("CAST(value AS STRING)")
                 .writeStream

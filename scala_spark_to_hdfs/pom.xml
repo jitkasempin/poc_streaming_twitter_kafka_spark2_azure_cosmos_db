@@ -8,6 +8,35 @@
     <artifactId>kafka-streaming</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.deploy.plugin>2.8.1</maven.deploy.plugin>
+
+        <mockito.version>1.8.5</mockito.version>
+        <scalatest.version>3.0.0</scalatest.version>
+        <scalatest.maven.version>1.0</scalatest.maven.version>
+        <scala.maven.plugin.version>3.3.2</scala.maven.plugin.version>
+
+        <spark.version>2.3.0</spark.version>
+        <kafka.spark.version>0-10</kafka.spark.version>
+
+        <scala.version>2.11.8</scala.version>
+        <scala.compat.version>2.11</scala.compat.version>
+        <specs.version>2.4.16</specs.version>
+        <scalatest.version>3.0.1</scalatest.version>
+
+        <databricks.spark.avro>4.0.0</databricks.spark.avro>
+
+        <avro.version>1.8.2</avro.version>
+
+        <jackson.databind.version>2.6.1</jackson.databind.version>
+
+        <confluent.version>5.1.0</confluent.version>
+
+        <gpg.plugin.version>1.6</gpg.plugin.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -45,10 +74,41 @@
             <version>1.11.470</version>
         </dependency>
 
+
+        <!-- https://mvnrepository.com/artifact/za.co.absa/abris -->
+
         <dependency>
-            <groupId>za.co.absa</groupId>
-	    <artifactId>abris_2.11</artifactId>
-	    <version>2.2.0</version>
+            <groupId>com.databricks</groupId>
+            <artifactId>spark-avro_2.11</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>io.confluent</groupId>-->
+    	    <!--<artifactId>kafka-avro-serializer</artifactId>-->
+	        <!--<version>5.1.0</version>-->
+        <!--</dependency>-->
+
+        <!-- Confluent's Kafka and Schema Registry -->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>${confluent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+            <version>${confluent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>common-config</artifactId>
+            <version>${confluent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>${confluent.version}</version>
         </dependency>
 
         <dependency>
@@ -62,6 +122,33 @@
             <artifactId>hadoop-hdfs</artifactId>
             <version>3.1.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.compat.version}</artifactId>
+            <version>${scalatest.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-core_${scala.compat.version}</artifactId>
+            <version>${specs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+        </dependency>
+
+
+        <!-- Avro -->
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${avro.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -116,5 +203,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Confluent repository since their dependencies are not available in Maven Central -->
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>http://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
+
+
 </project>
 
