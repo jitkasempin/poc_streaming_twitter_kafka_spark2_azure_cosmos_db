@@ -6,6 +6,9 @@ import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder.RecordBuilder
 import org.apache.spark.sql.types.{DataType, StructType}
 
+
+// Dong modify from the original source
+
 /**
  * This class works as a bridge between Databricks' and the current library.
  *
@@ -17,15 +20,21 @@ object DatabricksAdapter {
   def getNewRecordNamespace(
     elementDataType:        DataType,
     currentRecordNamespace: String,
-    elementName:            String): String = SchemaConverters.getNewRecordNamespace(elementDataType, currentRecordNamespace, elementName)
+    elementName:            String): String = """unknown"""
+
+    //SchemaConverters.getNewRecordNamespace(elementDataType, currentRecordNamespace, elementName)
 
   def toSqlType(avroSchema: Schema): SchemaType = SchemaConverters.toSqlType(avroSchema)
 
   def createConverterToSQL(
     sourceAvroSchema: Schema,
     targetSqlType:    DataType): AnyRef => AnyRef = {
-    SchemaConverters.createConverterToSQL(sourceAvroSchema, targetSqlType)
+//    SchemaConverters.createConverterToSQL(sourceAvroSchema, targetSqlType)
+      val fx = (x: AnyRef) => x
+
+      fx
   }
+
 
   def convertStructToAvro[T](
       structType: StructType,

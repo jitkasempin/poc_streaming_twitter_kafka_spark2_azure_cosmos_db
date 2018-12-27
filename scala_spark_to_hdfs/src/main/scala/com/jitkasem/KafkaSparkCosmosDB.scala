@@ -1,5 +1,7 @@
 package com.jitkasem
 
+import abris.avro.read.confluent.SchemaManager
+import abris.avro.schemas.policy.SchemaRetentionPolicies.RETAIN_SELECTED_COLUMN_ONLY
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
@@ -17,13 +19,25 @@ object KafkaSparkCosmosDB {
 
     val topic = "confluent-in-prices"
 
+    val schemaRegistryConfs = Map(
+      SchemaManager.PARAM_SCHEMA_REGISTRY_URL          -> schemaRegistryURL,
+      SchemaManager.PARAM_SCHEMA_REGISTRY_TOPIC        -> topic,
+      SchemaManager.PARAM_VALUE_SCHEMA_NAMING_STRATEGY -> SchemaManager.SchemaStorageNamingStrategies.TOPIC_RECORD_NAME, // choose a subject name strategy
+      SchemaManager.PARAM_VALUE_SCHEMA_ID              -> "latest" // set to "" if you want the latest schema version to used
+    )
+
     val conf = new SparkConf()
                   .setMaster(RUN_LOCAL_WITH_AVAILABLE_CORES)
                   .setAppName(APPLICATION_NAME)
 
     val spark = SparkSession.builder.config(conf).getOrCreate()
 
-    import spark.implicits._
+//    import spark.implicits._
+    // import Spark Avro Dataframes
+//    import za.co.absa.abris.avro.AvroSerDe._
+
+    import abris.avro.AvroSerDe._
+
 
     spark.sparkContext.setLogLevel("ERROR")
 
@@ -32,22 +46,18 @@ object KafkaSparkCosmosDB {
       .format("kafka")
       .option("kafka.bootstrap.servers", "localhost:9092")
       .option("subscribe", topic)
-      .option("startingOffsets", "latest")
-      .option("failOnDataLoss", false)
-      .load()
+      .fromConfluentAvro("value", None,  Some(schemaRegistryConfs))(RETAIN_SELECTED_COLUMN_ONLY)
 
-//    val utils = new ConfluentSparkAvroUtils(schemaRegistryURL)
-//    val keyDes = utils.deserializerForSubject(topic + "-key")
-//    val valDes = utils.deserializerForSubject(topic + "-value")
-    
-    val dss = df
-                .selectExpr("CAST(value AS STRING)")
-                .writeStream
-                .format("csv")
-                .option("checkpointLocation", "chkpointjittempdir")
-                .option("path","hdfs://localhost:9000/user")
-                .start()
-                .awaitTermination()
+
+    val dss = df.writeStream.format("console").start().awaitTermination()
+
+//                .selectExpr("CAST(value AS STRING)")
+//                .writeStream
+//                .format("csv")
+//                .option("checkpointLocation", "chkpointjittempdir")
+//                .option("path","hdfs://localhost:9000/user")
+//                .start()
+//                .awaitTermination()
 
   }
 
