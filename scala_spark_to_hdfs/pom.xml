@@ -56,26 +56,12 @@
             <artifactId>spark-core_2.11</artifactId>
             <version>2.3.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.11</artifactId>
             <version>2.3.1</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
-            <version>3.1.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.470</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/za.co.absa/abris -->
 
         <dependency>
             <groupId>com.databricks</groupId>
@@ -112,18 +98,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-aws</artifactId>
-            <version>3.1.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-hdfs</artifactId>
-            <version>3.1.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.compat.version}</artifactId>
             <version>${scalatest.version}</version>
@@ -141,14 +115,12 @@
             <version>${mockito.version}</version>
         </dependency>
 
-
         <!-- Avro -->
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.apache.spark</groupId>
